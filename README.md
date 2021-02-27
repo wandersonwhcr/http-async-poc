@@ -29,3 +29,10 @@ docker-compose up --detach \
 ```
 curl --include localhost --header 'Host: handler'
 ```
+
+## Technologies
+
+* Docker
+* Traefik
+* RabbitMQ
+* Node.js
