@@ -15,15 +15,23 @@ const handler = async () => {
   // HTTP Server
   const server = http.createServer((req, res) => {
     // X-Request-Id
-    const requestId = uuid.v4();
+    const id = uuid.v4();
     // Queue
-    channel.sendToQueue("request", bson.serialize({ requestId }));
+    channel.sendToQueue("request", bson.serialize({ id }));
     // Headers
     res.writeHead(200, {
-      "X-Request-Id": requestId,
+      "X-Request-Id": id,
     });
     // Done!
     res.end();
+  });
+
+  // HTTP Worker
+  channel.consume("response", (message) => {
+    // Response
+    const response = bson.deserialize(message.content);
+    // Done!
+    channel.ack(message);
   });
 
   // Server Listen
