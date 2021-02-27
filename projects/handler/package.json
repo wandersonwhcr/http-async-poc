@@ -3,5 +3,11 @@
   "version": "1.0.0-alpha",
   "description": "HTTP Async Server Handler",
   "main": "index.js",
-  "license": "BSD-3-Clause"
+  "license": "BSD-3-Clause",
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  },
+  "scripts": {
+    "watch": "nodemon server.js"
+  }
 }
