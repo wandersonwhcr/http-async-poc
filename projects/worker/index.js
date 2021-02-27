@@ -7,20 +7,24 @@ const worker = async () => {
   // AMQP Channel
   const channel = await connection.createChannel();
   // Assert Request and Response Queue
-  channel.assertQueue("request");
-  channel.assertQueue("response");
+  channel.assertExchange("request", "fanout");
+  channel.assertExchange("response", "fanout");
+  // Create a Worker Request Queue
+  const q = await channel.assertQueue("", { exclusive: true });
+  // Bind Worker Request Queue to Request Exchange
+  channel.bindQueue(q.queue, "request");
 
   // Single Jobs
   channel.prefetch(1);
 
   // Consume
-  channel.consume("request", (message) => {
+  channel.consume(q.queue, (message) => {
     // Request
     const request = bson.deserialize(message.content)
     // Response
     const response = request;
     // Queue
-    channel.sendToQueue("response", bson.serialize(response));
+    channel.publish("response", "", bson.serialize(response));
     // Done!
     channel.ack(message);
   });

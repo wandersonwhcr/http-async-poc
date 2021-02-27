@@ -8,9 +8,13 @@ const handler = async () => {
   const connection = await amqp.connect(process.env.AMQP_URL);
   // AMQP Channel
   const channel = await connection.createChannel();
-  // Assert Request and Response Queue
-  channel.assertQueue("request");
-  channel.assertQueue("response");
+  // Assert Request and Response Exchange
+  channel.assertExchange("request", "fanout");
+  channel.assertExchange("response", "fanout");
+  // Create a Handler Response Queue
+  const q = await channel.assertQueue("", { exclusive: true });
+  // Bind Server Response Queue to Response Exchange
+  channel.bindQueue(q.queue, "response");
 
   // Mapper
   const responses = {};
@@ -22,11 +26,11 @@ const handler = async () => {
     // Mapping
     responses[id] = res;
     // Queue
-    channel.sendToQueue("request", bson.serialize({ id }));
+    channel.publish("request", "", bson.serialize({ id }));
   });
 
   // HTTP Worker
-  channel.consume("response", (message) => {
+  channel.consume(q.queue, (message) => {
     // Response
     const response = bson.deserialize(message.content);
     // Identifier
