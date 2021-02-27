@@ -52,6 +52,7 @@ const handler = async () => {
       const res = responses[id];
       // Headers
       res.writeHead(200, {
+        "X-Server-Id": serverId,
         "X-Request-Id": id,
       });
       // Done!
