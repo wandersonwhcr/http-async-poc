@@ -56,6 +56,8 @@ const handler = async () => {
       });
       // Done!
       res.end();
+      // Clean
+      delete responses[id];
     }
     // Done!
     channel.ack(message);
