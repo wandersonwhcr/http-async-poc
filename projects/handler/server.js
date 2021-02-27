@@ -12,24 +12,36 @@ const handler = async () => {
   channel.assertQueue("request");
   channel.assertQueue("response");
 
+  // Mapper
+  const responses = {};
+
   // HTTP Server
   const server = http.createServer((req, res) => {
-    // X-Request-Id
+    // Identifier
     const id = uuid.v4();
+    // Mapping
+    responses[id] = res;
     // Queue
     channel.sendToQueue("request", bson.serialize({ id }));
-    // Headers
-    res.writeHead(200, {
-      "X-Request-Id": id,
-    });
-    // Done!
-    res.end();
   });
 
   // HTTP Worker
   channel.consume("response", (message) => {
     // Response
     const response = bson.deserialize(message.content);
+    // Identifier
+    const id = response.id;
+    // Found?
+    if (responses[id]) {
+      // Initialize
+      const res = responses[id];
+      // Headers
+      res.writeHead(200, {
+        "X-Request-Id": id,
+      });
+      // Done!
+      res.end();
+    }
     // Done!
     channel.ack(message);
   });
