@@ -1,6 +1,7 @@
+const amqp = require("amqplib");
+const bson = require("bson");
 const http = require("http");
 const uuid = require("uuid");
-const amqp = require("amqplib");
 
 const handler = async () => {
   // AMQP Connection
@@ -15,7 +16,9 @@ const handler = async () => {
   const server = http.createServer((req, res) => {
     // X-Request-Id
     const requestId = uuid.v4();
-    // Response Message Header
+    // Queue
+    channel.sendToQueue("request", bson.serialize({ requestId }));
+    // Headers
     res.writeHead(200, {
       "X-Request-Id": requestId,
     });
