@@ -10,6 +10,9 @@ const worker = async () => {
   channel.assertQueue("request");
   channel.assertQueue("response");
 
+  // Single Jobs
+  channel.prefetch(1);
+
   // Consume
   channel.consume("request", (message) => {
     // Request
