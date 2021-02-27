@@ -4,7 +4,7 @@ const amqp = require("amqplib");
 
 const handler = async () => {
   // AMQP Connection
-  const connection = await amqp.connect("amqp://broker");
+  const connection = await amqp.connect(process.env.AMQP_URL);
   // AMQP Channel
   const channel = await connection.createChannel();
   // Assert Request and Response Queue
