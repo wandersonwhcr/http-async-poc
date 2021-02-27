@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+
+  handler:
+    image: "node:15.10"
+    volumes:
+    - "./projects/handler:/app"
+    working_dir: "/app"
+    command: ["npm", "start"]
