@@ -2,15 +2,31 @@ version: "3.8"
 
 services:
 
+  proxy:
+    image: "traefik:2.4"
+    ports:
+    - "80:80"
+    volumes:
+    - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    command:
+    - "--entrypoints.web.address=:80"
+    - "--log.level=DEBUG"
+    - "--providers.docker.exposedbydefault=false"
+    - "--providers.docker=true"
+
   broker:
     image: "rabbitmq:3.8"
 
   handler:
     image: "node:15.10"
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.handler.rule=Host(`handler`)"
+    - "traefik.port=3000"
     volumes:
     - "./projects/handler:/app"
     ports:
-    - "80:3000"
+    - "3000"
     working_dir: "/app"
     environment:
       AMQP_URL: "amqp://broker"
