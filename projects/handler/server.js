@@ -13,7 +13,7 @@ const handler = async () => {
   // AMQP Channel
   const channel = await connection.createChannel();
   // Assert Request and Response Exchange
-  channel.assertExchange("request", "fanout");
+  channel.assertExchange("request", "direct");
   channel.assertExchange("response", "direct");
 
   // Create a Handler Response Queue
@@ -33,7 +33,7 @@ const handler = async () => {
     // Mapping
     responses[id] = res;
     // Queue
-    channel.publish("request", serverId, bson.serialize({ id }));
+    channel.publish("request", "", bson.serialize({ id, serverId }));
     // Logging
     logger.info({ method: "publish", exchange: "request", id });
   });

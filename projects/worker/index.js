@@ -9,13 +9,13 @@ const worker = async () => {
   const channel = await connection.createChannel();
 
   // Assert Request and Response Queue
-  channel.assertExchange("request", "fanout");
+  channel.assertExchange("request", "direct");
   channel.assertExchange("response", "direct");
 
-  // Create a Worker Request Queue
-  const q = await channel.assertQueue("", { exclusive: true });
+  // Assert Request Queue
+  await channel.assertQueue("request");
   // Bind Worker Request Queue to Request Exchange
-  channel.bindQueue(q.queue, "request");
+  channel.bindQueue("request", "request");
 
   // Logging
   const logger = pino();
@@ -24,15 +24,15 @@ const worker = async () => {
   channel.prefetch(1);
 
   // Consume
-  channel.consume(q.queue, (message) => {
+  channel.consume("request", (message) => {
     // Request
     const request = bson.deserialize(message.content)
     // Logging
-    logger.info({ method: "consume", queue: q.queue, ...request });
+    logger.info({ method: "consume", queue: "request", ...request });
     // Response
     const response = request;
     // Queue
-    channel.publish("response", message.fields.routingKey, bson.serialize(response));
+    channel.publish("response", request.serverId, bson.serialize(response));
     // Logging
     logger.info({ method: "publish", exchange: "response", ...request });
     // Done!
