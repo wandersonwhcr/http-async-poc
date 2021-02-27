@@ -1,8 +1,14 @@
 const http = require("http");
+const uuid = require("uuid");
 
 const server = http.createServer((req, res) => {
-  res.writeHead(200);
-  res.end('OK');
+  const requestId = uuid.v4();
+
+  res.writeHead(200, {
+    'X-Request-Id': requestId,
+  });
+
+  res.end();
 });
 
 server.listen(process.env.PORT, '0.0.0.0');
