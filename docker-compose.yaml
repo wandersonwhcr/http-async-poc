@@ -2,6 +2,9 @@ version: "3.8"
 
 services:
 
+  broker:
+    image: "rabbitmq:3.8"
+
   handler:
     image: "node:15.10"
     volumes:
@@ -14,5 +17,11 @@ services:
       PORT: "3000"
     command: ["npm", "run", "watch"]
 
-  broker:
-    image: "rabbitmq:3.8"
+  worker:
+    image: "node:15.10"
+    volumes:
+    - "./projects/worker:/app"
+    working_dir: "/app"
+    environment:
+      AMQP_URL: "amqp://broker"
+    command: ["npm", "run", "watch"]
