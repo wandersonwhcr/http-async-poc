@@ -1,0 +1,7 @@
+{
+  "name": "@wandersonwhcr/worker",
+  "version": "1.0.0-alpha",
+  "description": "HTTP Async Server Worker",
+  "main": "index.js",
+  "license": "BSD-3-Clause"
+}
