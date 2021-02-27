@@ -4,13 +4,14 @@
   "description": "HTTP Async Server Handler",
   "main": "index.js",
   "license": "BSD-3-Clause",
-  "devDependencies": {
-    "nodemon": "^2.0.7"
-  },
   "scripts": {
     "watch": "nodemon server.js"
   },
   "dependencies": {
+    "amqplib": "^0.7.0",
     "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
   }
 }
