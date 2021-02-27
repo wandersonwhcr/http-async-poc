@@ -1,6 +1,7 @@
 const amqp = require("amqplib");
 const bson = require("bson");
 const http = require("http");
+const pino = require("pino");
 const uuid = require("uuid");
 
 const handler = async () => {
@@ -20,6 +21,8 @@ const handler = async () => {
   // Bind Server Response Queue to Response Exchange
   channel.bindQueue(q.queue, "response", serverId);
 
+  // Logger
+  const logger = pino();
   // Mapper
   const responses = {};
 
@@ -30,13 +33,17 @@ const handler = async () => {
     // Mapping
     responses[id] = res;
     // Queue
-    channel.publish("request", "", bson.serialize({ id }));
+    channel.publish("request", serverId, bson.serialize({ id }));
+    // Logging
+    logger.info({ method: "publish", exchange: "request", id });
   });
 
   // HTTP Worker
   channel.consume(q.queue, (message) => {
     // Response
     const response = bson.deserialize(message.content);
+    // Logging
+    logger.info({ method: "consume", queue: q.queue, ...response });
     // Identifier
     const id = response.id;
     // Found?
