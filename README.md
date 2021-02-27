@@ -17,3 +17,15 @@ docker run --rm --interactive --tty \
     --workdir /app \
     node:15.10 npm install
 ```
+
+## Usage
+
+```
+docker-compose up --detach \
+    --scale handler=2 \
+    --scale worker=10
+```
+
+```
+curl --include localhost --header 'Host: handler'
+```
