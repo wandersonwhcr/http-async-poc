@@ -9,5 +9,8 @@
   },
   "scripts": {
     "watch": "nodemon server.js"
+  },
+  "dependencies": {
+    "uuid": "^8.3.2"
   }
 }
