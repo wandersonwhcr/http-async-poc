@@ -4,17 +4,21 @@ const http = require("http");
 const uuid = require("uuid");
 
 const handler = async () => {
+  // Server
+  const serverId = uuid.v4();
+
   // AMQP Connection
   const connection = await amqp.connect(process.env.AMQP_URL);
   // AMQP Channel
   const channel = await connection.createChannel();
   // Assert Request and Response Exchange
   channel.assertExchange("request", "fanout");
-  channel.assertExchange("response", "fanout");
+  channel.assertExchange("response", "direct");
+
   // Create a Handler Response Queue
   const q = await channel.assertQueue("", { exclusive: true });
   // Bind Server Response Queue to Response Exchange
-  channel.bindQueue(q.queue, "response");
+  channel.bindQueue(q.queue, "response", serverId);
 
   // Mapper
   const responses = {};

@@ -6,9 +6,11 @@ const worker = async () => {
   const connection = await amqp.connect(process.env.AMQP_URL);
   // AMQP Channel
   const channel = await connection.createChannel();
+
   // Assert Request and Response Queue
   channel.assertExchange("request", "fanout");
-  channel.assertExchange("response", "fanout");
+  channel.assertExchange("response", "direct");
+
   // Create a Worker Request Queue
   const q = await channel.assertQueue("", { exclusive: true });
   // Bind Worker Request Queue to Request Exchange
